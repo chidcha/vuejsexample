@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!-- 
+	ref:https://tutorialzine.com/2016/03/5-practical-examples-for-learning-vue-js
+	use for Lab 6 308-466 WEB SERVICE TECHNOLOGY AND APPLICATIONS 
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vue.js Instant Search</title>
+
+    
+    <style>
+    /* Hide un-compiled mustache bindings
+    until the Vue instance is ready */
+
+    [v-cloak] {
+      display: none;
+    }
+
+    *{
+        margin:0;
+        padding:0;
+    }
+
+    body{
+        font:15px/1.3 'Open Sans', sans-serif;
+        color: #5e5b64;
+        text-align:center;
+    }
+
+    a, a:visited {
+        outline:none;
+        color:#389dc1;
+    }
+
+    a:hover{
+        text-decoration:none;
+    }
+
+    section, footer, header, aside, nav{
+        display: block;
+    }
+
+
+    /*-------------------------
+        The search input
+    --------------------------*/
+
+    .bar{
+        background-color:#5c9bb7;
+
+        background-image:-webkit-linear-gradient(top, #5c9bb7, #5392ad);
+        background-image:-moz-linear-gradient(top, #5c9bb7, #5392ad);
+        background-image:linear-gradient(top, #5c9bb7, #5392ad);
+
+        box-shadow: 0 1px 1px #ccc;
+        border-radius: 2px;
+        width: 400px;
+        padding: 14px;
+        margin: 45px auto 20px;
+        position:relative;
+    }
+
+    .bar input{
+        background:#fff no-repeat 13px 13px;
+        background-image:url(data:image/png;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7);
+
+        border: none;
+        width: 100%;
+        line-height: 19px;
+        padding: 11px 0;
+
+        border-radius: 2px;
+        box-shadow: 0 2px 8px #c4c4c4 inset;
+        text-align: left;
+        font-size: 14px;
+        font-family: inherit;
+        color: #738289;
+        font-weight: bold;
+        outline: none;
+        text-indent: 40px;
+    }
+
+    ul{
+        list-style: none;
+        width: 428px;
+        margin: 0 auto;
+        text-align: left;
+    }
+
+    ul li{
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        overflow: hidden;
+    }
+
+    ul li img{
+        width:60px;
+        height:60px;
+        float:left;
+        border:none;
+    }
+
+    ul li p{
+        margin-left: 75px;
+        font-weight: bold;
+        padding-top: 12px;
+        color:#6e7a7f;
+    }
+    </style>
+
+</head>
+<body>
+
+<form id="main" v-cloak>
+
+    <div class="bar">
+        <!-- Create a binding between the searchString model and the text field -->
+
+        <input type="text" v-model="searchString" placeholder="Enter your search terms" />
+    </div>
+
+    <ul>
+        <!-- Render a li element for every entry in the computed filteredArticles array. -->
+             
+        <li v-for="article in filteredArticles">
+            <a v-bind:href="article.url"><img v-bind:src="article.image" /></a>
+            <p>{{article.title}}</p>
+        </li>
+    </ul>
+
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
+<script>
+
+var demo = new Vue({
+    el: '#main',
+    data: {
+        searchString: "",
+
+        // The data model. These items would normally be requested via AJAX,
+        // but are hardcoded here for simplicity.
+
+        articles: [
+            {
+                "title": "Everything You Need to Ace Geometry in One Big Fat Notebook",
+                "url": "https://www.amazon.com/Everything-Need-Geometry-Notebook-Notebooks/dp/1523504374/",
+                "image": "https://m.media-amazon.com/images/I/81+mPGTgTIL._AC_UY218_.jpg"
+            },
+            {
+                "title": "Great Writing 1: Great Sentences for Great Paragraphs (Great Writing, Fifth Edition) 5th Edition",
+                "url": "https://www.amazon.com/Great-Writing-Sentences-Paragraphs-Fifth/dp/0357020820/",
+                "image": "https://images-na.ssl-images-amazon.com/images/I/51Wn7pkhXSL._SX388_BO1,204,203,200_.jpg"
+            },
+            {
+                "title": "Learning Web Design: A Beginner's Guide to HTML, CSS, JavaScript, and Web Graphics",
+                "url": "https://www.amazon.com/Learning-Web-Design-Beginners-JavaScript/dp/1491960205/",
+                "image": "https://m.media-amazon.com/images/I/A1O2e-E1WkL._AC_UY218_.jpg"
+            },
+            {
+                "title": "Managing Enterprise Projects: Using Project Online and Microsoft Project Server 2019",
+                "url": "https://www.amazon.com/Managing-Enterprise-Projects-Project-Microsoft/dp/1543988954/",
+                "image": "https://images-na.ssl-images-amazon.com/images/I/41t68XtkY+L._SX385_BO1,204,203,200_.jpg"
+            },
+            {
+                "title": "Web Design for Web Developers: Create Beautiful Websites!",
+                "url": "https://www.amazon.com/Introduction-to-Web-Design/dp/B01GRGMB3Y/",
+                "image": "https://images-na.ssl-images-amazon.com/images/I/71iL-Db5IBL._SX300_.jpg"
+            },
+            {
+                "title": "A Smarter Way to Learn HTML & CSS: Learn it faster. Remember it longer",
+                "url": "https://www.amazon.com/Smarter-Way-Learn-HTML-CSS-ebook/dp/B00ULX5FT2/",
+                "image": "https://m.media-amazon.com/images/I/51CRm0BBiAL.jpg"
+            }
+        ]
+    },
+    computed: {
+        // A computed property that holds only those articles that match the searchString.
+        filteredArticles: function () {
+            var articles_array = this.articles,
+                searchString = this.searchString;
+
+            if(!searchString){
+                return articles_array;
+            }
+
+            searchString = searchString.trim().toLowerCase();
+
+            articles_array = articles_array.filter(function(item){
+                if(item.title.toLowerCase().indexOf(searchString) !== -1){
+                    return item;
+                }
+            })
+
+            // Return an array with the filtered data.
+            return articles_array;;
+        }
+    }
+});
+</script>
+</body>
+</html>
